@@ -1,5 +1,6 @@
 import { auth } from "@/app/auth";
 import { redirect } from "next/navigation";
+import SignOutPage from "@/components/sing-out";
 
 export default async function Home() {
   const session = await auth();
@@ -9,7 +10,15 @@ export default async function Home() {
       {!session ? (
         redirect("/signin")
       ) : (
-        <h1>Welcome, {session.user?.name || "User"}!</h1>
+        <>
+          <h1>
+            Welcome, {session.user?.name || "User"}!__
+            {session.user?.email || "User"}
+          </h1>
+          <div>
+            <SignOutPage></SignOutPage>
+          </div>
+        </>
       )}
     </div>
   );
