@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default async function Home() {
+export default function Admin() {
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <div className="w-[60rem] h-screen flex flex-col gap-2  items-center">
