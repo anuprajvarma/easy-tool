@@ -15,7 +15,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch("http://localhost:5001/api/signup", {
+    await fetch("http://localhost:5001/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

@@ -9,7 +9,7 @@ export default function Home() {
   useEffect(() => {
     const fetchTodoList = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/todolist", {
+        const res = await fetch("http://localhost:5001/api/todo", {
           credentials: "include", // ✅ if you are using cookies
         });
         const data = await res.json();
