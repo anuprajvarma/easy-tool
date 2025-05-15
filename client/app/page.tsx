@@ -1,13 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [name, setName] = useState("");
+  const router = useRouter();
   useEffect(() => {
-    fetch("http://localhost:5001/api/todolist")
-      .then((res) => res.json())
-      .then((data) => setName(data.message));
+    const fetchTodoList = async () => {
+      try {
+        const res = await fetch("http://localhost:5001/api/todolist", {
+          credentials: "include", // ✅ if you are using cookies
+        });
+        const data = await res.json();
+        console.log(data);
+        if (data.success) {
+          router.push(data.redirectTo);
+        } else {
+          // setName(data.user.);
+          console.log("login user");
+        }
+      } catch (err) {
+        console.error("Failed to fetch todo list:", err);
+      }
+    };
+
+    fetchTodoList(); // 👈 call the async function
   }, []);
   return (
     <div className="w-full h-screen flex justify-center items-center">
