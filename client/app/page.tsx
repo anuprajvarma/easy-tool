@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 // import EditModal from "@/components/ui/dialog";
-import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 interface Todo {
   _id: string;
@@ -25,7 +25,7 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
-  const [_id, setId] = useState<number>();
+  const [_id, setId] = useState<string>();
   const [todoTitle, setTodoTitle] = useState<string>("");
   const [dialogTitle, setDialogTitle] = useState<string>("");
   const [todoChange, setTodoChange] = useState<boolean>(true);
@@ -51,7 +51,7 @@ export default function Home() {
         // console.log(`data ${data}`);
 
         if (data.success) {
-          router.push(data.redirectTo);
+          router.push(data.redirectTo ?? "");
         } else {
           setTodos(data.todo);
           setEmail(data.user.email);
@@ -91,7 +91,7 @@ export default function Home() {
     }
   };
 
-  const deleteHandler = async (_id) => {
+  const deleteHandler = async (_id: string) => {
     const res = await fetch("http://localhost:5001/api/todo", {
       method: "DELETE",
       credentials: "include",
@@ -108,7 +108,11 @@ export default function Home() {
   };
 
   const editHandler = async () => {
-    console.log(_id);
+    if (!_id) {
+      console.error("ID is undefined");
+      return;
+    }
+
     close();
     const res = await fetch("http://localhost:5001/api/todo", {
       method: "PATCH",
@@ -116,7 +120,10 @@ export default function Home() {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ _id, dialogTitle }).toString(),
+      body: new URLSearchParams({
+        _id: _id,
+        dialogTitle: dialogTitle,
+      }).toString(),
     });
     const data = await res.json();
     console.log(data);
@@ -125,7 +132,7 @@ export default function Home() {
     }
   };
 
-  const dialogHandler = (title, _id) => {
+  const dialogHandler = (title: string, _id: string) => {
     setDialogTitle(title);
     setId(_id);
     open();
@@ -188,7 +195,7 @@ export default function Home() {
                                 onChange={(e) => setDialogTitle(e.target.value)}
                                 className="mt-3 block w-[30rem] rounded-lg border border-black px-3 py-1.5 text-sm/6 text-black"
                               />
-                              <button onClick={() => editHandler(item._id)}>
+                              <button onClick={() => editHandler()}>
                                 Edit
                               </button>
                               {/* <Button
