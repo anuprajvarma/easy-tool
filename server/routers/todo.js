@@ -6,7 +6,8 @@ const router = express.Router();
 // router.post("/todo", );
 
 router.get("/todo", loginRestrection, async (req, res) => {
-  console.log("to is running");
+  const user = req.user;
+  res.json({ user });
 });
 
 // router.delete("/todo", handleSignup);

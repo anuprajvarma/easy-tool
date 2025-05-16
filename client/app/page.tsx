@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const [name, setName] = useState("");
   const router = useRouter();
+
   useEffect(() => {
     const fetchTodoList = async () => {
       try {
@@ -13,12 +14,11 @@ export default function Home() {
           credentials: "include", // ✅ if you are using cookies
         });
         const data = await res.json();
-        console.log(data);
         if (data.success) {
           router.push(data.redirectTo);
         } else {
-          // setName(data.user.);
-          console.log("login user");
+          // console.log(data.user);
+          setName(data.user.name);
         }
       } catch (err) {
         console.error("Failed to fetch todo list:", err);
@@ -27,20 +27,25 @@ export default function Home() {
 
     fetchTodoList(); // 👈 call the async function
   }, []);
+
+  const handleSubmit = () => {};
+
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <div className="w-[40rem] h-screen flex flex-col gap-2 justify-center items-center">
         <div className="w-[30rem] h-[40rem] flex flex-col justify-center items-center">
           <div>
             <h1 className="text-center">{name} Todo-List</h1>
-            <form className="flex justify-between">
+            <form className="flex justify-between" onSubmit={handleSubmit}>
               <input
-                className="w-[14rem] bg-gray-700 text-white"
+                className="w-[14rem] bg-white text-black border border-gray-300"
                 type="search"
                 name="search"
                 required
               />
-              <button>Add</button>
+              <button className="cursor-pointer" type="submit">
+                Add
+              </button>
             </form>
             <div className="p-2 flex gap-2">
               <input type="checkbox" name="checkbox" />
