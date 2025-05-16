@@ -49,11 +49,11 @@ export default function Home() {
     };
 
     fetchTodoList();
-  }, [todoChange]);
+  }, [todoChange, router]);
 
   useEffect(() => {
     console.log("Updated todos:", todos);
-  }, [todoChange]);
+  }, [todoChange, todos]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(e.target.value);
@@ -62,7 +62,6 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // console.log(todoTitle);
-    setTodoChange(!todoChange);
     const res = await fetch("http://localhost:5001/api/todo", {
       method: "POST",
       credentials: "include",
@@ -72,8 +71,29 @@ export default function Home() {
       body: new URLSearchParams({ todoTitle, email }).toString(),
     });
     const data = await res.json();
-    // console.log(data.todo);
     setTodoTitle("");
+    if (data) {
+      setTodoChange(!todoChange);
+    }
+  };
+
+  const deleteHandler = async (title) => {
+    const res = await fetch("http://localhost:5001/api/todo", {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ title, email }).toString(),
+    });
+    const data = await res.json();
+    if (data.todo.acknowledged) {
+      setTodoChange(!todoChange);
+    }
+  };
+
+  const editHandler = () => {
+    console.log("edit");
   };
 
   return (
@@ -96,7 +116,25 @@ export default function Home() {
               </button>
             </form>
             {todos.map((item, index) => {
-              return <div key={index}>{item.title}</div>;
+              return (
+                <div key={index} className="flex justify-between gap-2">
+                  <div className="flex gap-2">
+                    <input type="checkbox" />
+                    <p>{item.title}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="cursor-pointer" onClick={editHandler}>
+                      Edit
+                    </button>
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => deleteHandler(item.title)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              );
             })}
           </div>
         </div>
