@@ -20,13 +20,18 @@ router.get("/todo", loginRestrection, async (req, res) => {
 });
 
 router.delete("/todo", async (req, res) => {
-  const { email, title } = req.body;
-  const todo = await Todo.deleteOne({ email, title });
+  const { _id } = req.body;
+  const todo = await Todo.findByIdAndDelete(_id);
   console.log(todo);
   res.json({ todo });
 });
 
-// router.patch("/todo", handleLogin);
+router.patch("/todo", async (req, res) => {
+  const { _id, dialogTitle } = req.body;
+  const todo = await Todo.findByIdAndUpdate({ _id }, { title: dialogTitle });
+  console.log(todo);
+  res.json({ todo });
+});
 
 // router.put("/todo");
 

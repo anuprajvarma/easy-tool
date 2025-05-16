@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+// import EditModal from "@/components/ui/dialog";
+import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 interface Todo {
-  id: string;
+  _id: string;
   email: string;
   title: string;
 }
@@ -23,9 +25,21 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [_id, setId] = useState<number>();
   const [todoTitle, setTodoTitle] = useState<string>("");
+  const [dialogTitle, setDialogTitle] = useState<string>("");
   const [todoChange, setTodoChange] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState(false);
+
   const router = useRouter();
+
+  function open() {
+    setIsOpen(true);
+  }
+
+  function close() {
+    setIsOpen(false);
+  }
 
   useEffect(() => {
     const fetchTodoList = async () => {
@@ -77,23 +91,44 @@ export default function Home() {
     }
   };
 
-  const deleteHandler = async (title) => {
+  const deleteHandler = async (_id) => {
     const res = await fetch("http://localhost:5001/api/todo", {
       method: "DELETE",
       credentials: "include",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ title, email }).toString(),
+      body: new URLSearchParams({ _id }).toString(),
     });
     const data = await res.json();
-    if (data.todo.acknowledged) {
+    console.log(data);
+    if (data) {
       setTodoChange(!todoChange);
     }
   };
 
-  const editHandler = () => {
-    console.log("edit");
+  const editHandler = async () => {
+    console.log(_id);
+    close();
+    const res = await fetch("http://localhost:5001/api/todo", {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ _id, dialogTitle }).toString(),
+    });
+    const data = await res.json();
+    console.log(data);
+    if (data) {
+      setTodoChange(!todoChange);
+    }
+  };
+
+  const dialogHandler = (title, _id) => {
+    setDialogTitle(title);
+    setId(_id);
+    open();
   };
 
   return (
@@ -119,16 +154,57 @@ export default function Home() {
               return (
                 <div key={index} className="flex justify-between gap-2">
                   <div className="flex gap-2">
-                    <input type="checkbox" />
                     <p>{item.title}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button className="cursor-pointer" onClick={editHandler}>
-                      Edit
-                    </button>
                     <button
                       className="cursor-pointer"
-                      onClick={() => deleteHandler(item.title)}
+                      onClick={() => dialogHandler(item.title, item._id)}
+                    >
+                      Edit
+                    </button>
+                    <Dialog
+                      open={isOpen}
+                      as="div"
+                      className="relative z-10 focus:outline-none"
+                      onClose={close}
+                      __demoMode
+                    >
+                      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4">
+                          <DialogPanel
+                            transition
+                            className="w-[60rem] rounded-xl bg-amber-800 p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                          >
+                            <DialogTitle
+                              as="h3"
+                              className="text-base/7 font-medium text-black"
+                            >
+                              Edit Title
+                            </DialogTitle>
+                            <div className="mt-4 flex gap-4">
+                              <input
+                                value={dialogTitle}
+                                onChange={(e) => setDialogTitle(e.target.value)}
+                                className="mt-3 block w-[30rem] rounded-lg border border-black px-3 py-1.5 text-sm/6 text-black"
+                              />
+                              <button onClick={() => editHandler(item._id)}>
+                                Edit
+                              </button>
+                              {/* <Button
+                                className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
+                                onClick={close}
+                              >
+                                Got it, thanks!
+                              </Button> */}
+                            </div>
+                          </DialogPanel>
+                        </div>
+                      </div>
+                    </Dialog>
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => deleteHandler(item._id)}
                     >
                       Delete
                     </button>
