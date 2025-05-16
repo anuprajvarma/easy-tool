@@ -19,9 +19,15 @@ const handleLogin = async (req, res) => {
     res.json({ message: "email or password is not fill" });
   const user = await User.findOne({ email, password });
   if (!user) res.json({ message: "user not exist" });
-  const sessionId = uuidv4();
-  setUser(sessionId, user);
-  res.cookie("uid", sessionId, {
+  //   const sessionId = uuidv4();
+  //   setUser(sessionId, user);
+  //   res.cookie("uid", sessionId, {
+  //     httpOnly: true,
+  //     secure: false, // true in production with HTTPS
+  //     sameSite: "lax", // or "none" with secure: true if cross-site
+  //   });
+  const token = setUser(user);
+  res.cookie("uid", token, {
     httpOnly: true,
     secure: false, // true in production with HTTPS
     sameSite: "lax", // or "none" with secure: true if cross-site
