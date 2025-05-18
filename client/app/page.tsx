@@ -16,7 +16,7 @@ interface ApiResponse {
   success: boolean;
   redirectTo?: string;
   todo: Todo[];
-  user: {
+  loginUser: {
     email: string;
     name: string;
   };
@@ -34,10 +34,6 @@ export default function Home() {
 
   const router = useRouter();
   const session = useSession();
-
-  if (session.status === "unauthenticated") {
-    router.push("/login");
-  }
 
   function open() {
     setIsOpen(true);
@@ -57,11 +53,11 @@ export default function Home() {
         // console.log(`data ${data}`);
 
         if (data.success) {
-          router.push(data.redirectTo ?? "");
+          router.push("/login");
         } else {
           setTodos(data.todo);
-          setEmail(data.user.email);
-          setName(data.user.name);
+          setEmail(data.loginUser.email);
+          setName(data.loginUser.name);
         }
       } catch (err) {
         console.error("Failed to fetch todo list:", err);
@@ -144,6 +140,13 @@ export default function Home() {
     open();
   };
 
+  console.log(email);
+  console.log(session.status);
+
+  // if (session.status === "unauthenticated" && email === "loading") {
+  //   router.push("/login");
+  // }
+
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <div className="w-[40rem] h-screen flex flex-col gap-2 justify-center items-center">
@@ -154,7 +157,11 @@ export default function Home() {
                 {name}
                 {session?.data?.user?.name} Todo-List
               </h1>
-              <button onClick={() => signOut()}>sign out</button>
+              {session.status === "authenticated" ? (
+                <button onClick={() => signOut()}>sign out</button>
+              ) : (
+                ""
+              )}
             </div>
             <form className="flex justify-between" onSubmit={handleSubmit}>
               <input

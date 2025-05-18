@@ -1,6 +1,7 @@
 const express = require("express");
 const { loginRestrection } = require("../middlewares/auth");
 const Todo = require("../models/todo");
+const User = require("../models/user");
 
 const router = express.Router();
 
@@ -16,7 +17,10 @@ router.post("/todo", async (req, res) => {
 router.get("/todo", loginRestrection, async (req, res) => {
   const user = req.user;
   const todo = await Todo.find({ email: user.email });
-  res.json({ user, todo });
+  console.log(user.email);
+  const loginUser = await User.findOne({ email: user.email });
+  console.log(`loginuser ${loginUser}`);
+  res.json({ loginUser, todo });
 });
 
 router.delete("/todo", async (req, res) => {

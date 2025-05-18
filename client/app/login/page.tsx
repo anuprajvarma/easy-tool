@@ -6,32 +6,41 @@ import GoogleSignInButton from "@/components/ui/GoogleSignInButton";
 
 const Login = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setEmail(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(email);
     const res = await fetch("http://localhost:5001/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       credentials: "include", // ✅ necessary to send/receive cookies
-      body: new URLSearchParams(formData as Record<string, string>).toString(),
+      body: new URLSearchParams({ email }).toString(),
     });
     const data = await res.json();
-    if (data.success) {
-      router.push(data.redirectTo);
+    if (data?.user && data?.redirectTo) {
+      router.push("/");
+      // setRedirectTo(data?.redirectTo);
     } else {
       console.log("redirecting error");
     }
   };
+
+  // useEffect(() => {
+  //   if (redirectTo) {
+  //     console.log("Redirecting to:", redirectTo);
+  //     router.push(redirectTo);
+  //   } else {
+  //     console.log("Redirecting error");
+  //   }
+  // }, [redirectTo, router]);
+
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <div className="w-[60rem] h-screen flex flex-col gap-2  items-center ">
@@ -47,14 +56,6 @@ const Login = () => {
               required
               name="email"
               placeholder="enter your email"
-              onChange={handleChange}
-            />
-            <label>password</label>
-            <input
-              type="text"
-              required
-              name="password"
-              placeholder="enter your password"
               onChange={handleChange}
             />
             <button className="cursor-pointer" type="submit">
