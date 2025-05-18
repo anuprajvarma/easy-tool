@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import GoogleSignInButton from "@/components/ui/GoogleSignInButton";
 
 const Login = () => {
   const router = useRouter();
@@ -33,9 +34,12 @@ const Login = () => {
   };
   return (
     <div className="w-full h-screen flex justify-center items-center">
-      <div className="w-[60rem] h-screen flex flex-col gap-2  items-center">
-        <div className="w-[40rem] h-[40rem] flex flex-col">
-          <h1>Login Page</h1>
+      <div className="w-[60rem] h-screen flex flex-col gap-2  items-center ">
+        <div className="w-[40rem] h-[40rem] flex flex-col py-8">
+          <div className="flex justify-between">
+            <h1>Login Page</h1>
+            <GoogleSignInButton />
+          </div>
           <form className="flex flex-col" onSubmit={handleSubmit}>
             <label>email</label>
             <input

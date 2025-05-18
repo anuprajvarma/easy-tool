@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 // import EditModal from "@/components/ui/dialog";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface Todo {
   _id: string;
@@ -32,6 +33,11 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
+  const session = useSession();
+
+  if (session.status === "unauthenticated") {
+    router.push("/login");
+  }
 
   function open() {
     setIsOpen(true);
@@ -66,7 +72,7 @@ export default function Home() {
   }, [todoChange, router]);
 
   useEffect(() => {
-    console.log("Updated todos:", todos);
+    // console.log("Updated todos:", todos);
   }, [todoChange, todos]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +107,7 @@ export default function Home() {
       body: new URLSearchParams({ _id }).toString(),
     });
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     if (data) {
       setTodoChange(!todoChange);
     }
@@ -126,7 +132,7 @@ export default function Home() {
       }).toString(),
     });
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     if (data) {
       setTodoChange(!todoChange);
     }
@@ -142,8 +148,14 @@ export default function Home() {
     <div className="w-full h-screen flex justify-center items-center">
       <div className="w-[40rem] h-screen flex flex-col gap-2 justify-center items-center">
         <div className="w-[30rem] h-[40rem] flex flex-col justify-center items-center">
-          <div>
-            <h1 className="text-center">{name} Todo-List</h1>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <h1 className="text-center">
+                {name}
+                {session?.data?.user?.name} Todo-List
+              </h1>
+              <button onClick={() => signOut()}>sign out</button>
+            </div>
             <form className="flex justify-between" onSubmit={handleSubmit}>
               <input
                 className="w-[14rem] bg-white text-black border border-gray-300"
@@ -198,12 +210,6 @@ export default function Home() {
                               <button onClick={() => editHandler()}>
                                 Edit
                               </button>
-                              {/* <Button
-                                className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
-                                onClick={close}
-                              >
-                                Got it, thanks!
-                              </Button> */}
                             </div>
                           </DialogPanel>
                         </div>
