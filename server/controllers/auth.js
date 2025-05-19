@@ -4,9 +4,9 @@ const { setUser, getUser, checkUser, deleteUser } = require("../services/auth");
 
 const handleSignup = async (req, res) => {
   const { name, email } = req.body;
-  console.log(`email ${email}`);
+  // console.log(`email ${email}`);
   let user = await User.findOne({ email });
-  console.log(`user ${user}`);
+  // console.log(`user ${user}`);
   if (!user) {
     user = await User.create({
       name,
@@ -19,9 +19,9 @@ const handleSignup = async (req, res) => {
 
 const handleLogin = async (req, res) => {
   const { email } = req.body;
-  console.log(`email ${email}`);
+  // console.log(`email ${email}`);
   const user = await User.findOne({ email });
-  console.log(`user ${user}`);
+  // console.log(`user ${user}`);
   if (!user) res.json({ message: "user not exist" });
   //   const sessionId = uuidv4();
   //   setUser(sessionId, user);
@@ -39,18 +39,28 @@ const handleLogin = async (req, res) => {
   res.json({ user, redirectTo: "/" });
 };
 
+const handleSignout = async (req, res) => {
+  res.clearCookie("uid", {
+    httpOnly: true,
+    secure: false, // true in production with HTTPS
+    sameSite: "lax", // or "none" with secure: true if cross-site
+  });
+  res.json({ success: true, redirectTo: "/login" });
+};
+
 const googleAuthHandle = async (req, res) => {
   const { name, email } = req.body;
   let user = await User.findOne({ email });
 
-  console.log(`google call ${email}`);
+  // console.log(`google call ${email}`);
 
   if (!user) {
     user = await User.create({ name, email, provider: "google" });
   }
 
   const token = setUser(user);
-  console.log(token);
+  console.log(`token ${token}`);
+  console.log(`user ${user}`);
   res.cookie("uid", token, {
     httpOnly: true,
     secure: false, // true in production with HTTPS
@@ -59,4 +69,4 @@ const googleAuthHandle = async (req, res) => {
   res.json({ user, redirectTo: "/" });
 };
 
-module.exports = { handleLogin, handleSignup, googleAuthHandle };
+module.exports = { handleLogin, handleSignup, googleAuthHandle, handleSignout };

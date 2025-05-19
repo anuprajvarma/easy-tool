@@ -45,12 +45,13 @@ export default function Home() {
 
   useEffect(() => {
     const fetchTodoList = async () => {
+      console.log("run useEffect");
       try {
         const res = await fetch("http://localhost:5001/api/todo", {
           credentials: "include",
         });
         const data: ApiResponse = await res.json();
-        // console.log(`data ${data}`);
+        console.log(`data ${data.loginUser}`);
 
         if (data.success) {
           router.push("/login");
@@ -58,6 +59,8 @@ export default function Home() {
           setTodos(data.todo);
           setEmail(data.loginUser.email);
           setName(data.loginUser.name);
+          console.log(`login user email ${data.loginUser.email}`);
+          console.log(`login user name ${data.loginUser.name}`);
         }
       } catch (err) {
         console.error("Failed to fetch todo list:", err);
@@ -77,7 +80,8 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // console.log(todoTitle);
+    console.log(todoTitle);
+    console.log(`email ${email}`);
     const res = await fetch("http://localhost:5001/api/todo", {
       method: "POST",
       credentials: "include",
@@ -140,8 +144,25 @@ export default function Home() {
     open();
   };
 
-  console.log(email);
-  console.log(session.status);
+  const handleSignout = async () => {
+    await signOut();
+    console.log("sing out");
+    const res = await fetch("http://localhost:5001/api/auth/signout", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+    const data = await res.json();
+    // console.log(data);
+    if (data.success) {
+      router.push(data.redirectTo);
+    }
+  };
+
+  // console.log(email);
+  // console.log(session.status);
 
   // if (session.status === "unauthenticated" && email === "loading") {
   //   router.push("/login");
@@ -155,12 +176,12 @@ export default function Home() {
             <div className="flex gap-4">
               <h1 className="text-center">
                 {name}
-                {session?.data?.user?.name} Todo-List
+                Todo-List
               </h1>
               {session.status === "authenticated" ? (
-                <button onClick={() => signOut()}>sign out</button>
+                <button onClick={handleSignout}>sign out</button>
               ) : (
-                ""
+                <button onClick={handleSignout}>sign out</button>
               )}
             </div>
             <form className="flex justify-between" onSubmit={handleSubmit}>

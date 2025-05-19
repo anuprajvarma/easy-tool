@@ -14,13 +14,14 @@ export default function GoogleSignInButton() {
         name: session.data?.user?.name,
         email: session.data?.user?.email,
       }),
+      credentials: "include",
       // body: new URLSearchParams(formData as Record<string, string>).toString(),
     })
       .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then((data) => console.log(`google data ${data.user}`));
   };
 
-  console.log(`session ${session.data?.user?.name}`);
+  // console.log(`session ${session.data?.user?.name}`);
   if (session.status === "authenticated") {
     handleGoogleAuthSubmit();
     router.push("/");
