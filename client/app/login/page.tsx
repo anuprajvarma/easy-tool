@@ -26,20 +26,10 @@ const Login = () => {
     const data = await res.json();
     if (data?.user && data?.redirectTo) {
       router.push("/");
-      // setRedirectTo(data?.redirectTo);
     } else {
       console.log("redirecting error");
     }
   };
-
-  // useEffect(() => {
-  //   if (redirectTo) {
-  //     console.log("Redirecting to:", redirectTo);
-  //     router.push(redirectTo);
-  //   } else {
-  //     console.log("Redirecting error");
-  //   }
-  // }, [redirectTo, router]);
 
   return (
     <div className="w-full h-screen flex justify-center items-center">

@@ -70,9 +70,7 @@ export default function Home() {
     fetchTodoList();
   }, [todoChange, router]);
 
-  useEffect(() => {
-    // console.log("Updated todos:", todos);
-  }, [todoChange, todos]);
+  useEffect(() => {}, [todoChange, todos]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(e.target.value);
@@ -132,7 +130,6 @@ export default function Home() {
       }).toString(),
     });
     const data = await res.json();
-    // console.log(data);
     if (data) {
       setTodoChange(!todoChange);
     }
@@ -155,18 +152,10 @@ export default function Home() {
       },
     });
     const data = await res.json();
-    // console.log(data);
     if (data.success) {
       router.push(data.redirectTo);
     }
   };
-
-  // console.log(email);
-  // console.log(session.status);
-
-  // if (session.status === "unauthenticated" && email === "loading") {
-  //   router.push("/login");
-  // }
 
   return (
     <div className="w-full h-screen flex justify-center items-center">

@@ -1,4 +1,3 @@
-// components/GoogleSignInButton.tsx
 "use client";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -15,13 +14,11 @@ export default function GoogleSignInButton() {
         email: session.data?.user?.email,
       }),
       credentials: "include",
-      // body: new URLSearchParams(formData as Record<string, string>).toString(),
     })
       .then((res) => res.json())
       .then((data) => console.log(`google data ${data.user}`));
   };
 
-  // console.log(`session ${session.data?.user?.name}`);
   if (session.status === "authenticated") {
     handleGoogleAuthSubmit();
     router.push("/");
